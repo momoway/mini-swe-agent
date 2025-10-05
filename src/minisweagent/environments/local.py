@@ -4,6 +4,7 @@ import subprocess
 from dataclasses import asdict, dataclass, field
 from typing import Any
 
+import time
 
 @dataclass
 class LocalEnvironmentConfig:
@@ -20,6 +21,7 @@ class LocalEnvironment:
     def execute(self, command: str, cwd: str = "", *, timeout: int | None = None):
         """Execute a command in the local environment and return the result as a dict."""
         cwd = cwd or self.config.cwd or os.getcwd()
+        current_time = time.time()
         result = subprocess.run(
             command,
             shell=True,
@@ -32,7 +34,8 @@ class LocalEnvironment:
             stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT,
         )
-        return {"output": result.stdout, "returncode": result.returncode}
+        execute_time = time.time() - current_time
+        return {"output": result.stdout, "returncode": result.returncode, "execute_time": execute_time}
 
     def get_template_vars(self) -> dict[str, Any]:
         return asdict(self.config) | platform.uname()._asdict() | os.environ

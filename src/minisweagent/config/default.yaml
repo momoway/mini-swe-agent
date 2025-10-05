@@ -102,6 +102,7 @@ agent:
     anything
     ```
   action_observation_template: |
+    <execute_time>{{output.execute_time}}</execute_time>
     <returncode>{{output.returncode}}</returncode>
     {% if output.output | length < 10000 -%}
     <output>
